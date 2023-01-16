@@ -20,7 +20,7 @@ export const client = z.object({
 
 /**
  * You can't destruct `process.env` as a regular object in the Next.js
- * edge runtimes (e.g. middlewares) so we need to destruct manually.
+ * edge runtimes (e.g. middlewares) or client-side so we need to destruct manually.
  * @type {Record<keyof z.infer<typeof server> | keyof z.infer<typeof client>, string | undefined>}
  */
 export const processEnv = {
@@ -43,29 +43,18 @@ export const formatErrors = (
     })
     .filter(Boolean);
 
-const serverEnv = server.safeParse(processEnv);
-if (serverEnv.success === false && typeof window === "undefined") {
-  // Only throw if we're in the server-side
+const merged = server.merge(client);
+const parsed =
+  typeof window === "undefined"
+    ? merged.safeParse(processEnv)
+    : client.safeParse(processEnv);
+if (parsed.success === false) {
   console.error(
     "❌ Invalid environment variables:\n",
-    ...formatErrors(serverEnv.error.format())
+    ...formatErrors(parsed.error.format())
   );
   throw new Error("Invalid environment variables");
 }
 
-const clientEnv = client.safeParse(processEnv);
-if (clientEnv.success === false) {
-  console.error(
-    "❌ Invalid environment variables:\n",
-    ...formatErrors(clientEnv.error.format())
-  );
-  throw new Error("Invalid environment variables");
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _merged = server.merge(client);
-/** @type z.infer<_merged>> */
-export const env = {
-  ...clientEnv.data,
-  ...(serverEnv.success ? serverEnv.data : {}),
-};
+/** @type z.infer<merged> */
+export const env = parsed.data;

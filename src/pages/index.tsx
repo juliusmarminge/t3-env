@@ -18,7 +18,7 @@ const Home: NextPage = () => {
             Create <span className={styles.pinkSpan}>T3</span> App
           </h1>
           <p className={styles.title}>{env.NEXT_PUBLIC_CLIENTVAR}</p>
-          <p className={styles.title}>{env.NEXTAUTH_SECRET}</p>
+
           <div className={styles.cardRow}>
             <Link
               className={styles.card}

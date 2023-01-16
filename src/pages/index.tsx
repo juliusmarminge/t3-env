@@ -2,6 +2,7 @@ import styles from "./index.module.css";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
+import { env } from "../env.mjs";
 
 const Home: NextPage = () => {
   return (
@@ -16,6 +17,8 @@ const Home: NextPage = () => {
           <h1 className={styles.title}>
             Create <span className={styles.pinkSpan}>T3</span> App
           </h1>
+          <p className={styles.title}>{env.NEXT_PUBLIC_CLIENTVAR}</p>
+          <p className={styles.title}>{env.NEXTAUTH_SECRET}</p>
           <div className={styles.cardRow}>
             <Link
               className={styles.card}

@@ -1,4 +1,3 @@
-// @ts-check
 import { z } from "zod";
 
 /**
@@ -22,11 +21,11 @@ export const client = z.object({
 /**
  * You can't destruct `process.env` as a regular object in the Next.js
  * edge runtimes (e.g. middlewares) so we need to destruct manually.
+ * @type {Record<keyof z.infer<typeof server> | keyof z.infer<typeof client>, string | undefined>}
  */
 export const processEnv = {
   NODE_ENV: process.env.NODE_ENV,
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
-
   NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
 
@@ -63,6 +62,9 @@ if (clientEnv.success === false) {
   throw new Error("Invalid environment variables");
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _merged = server.merge(client);
+/** @type z.infer<_merged>> */
 export const env = {
   ...clientEnv.data,
   ...(serverEnv.success ? serverEnv.data : {}),

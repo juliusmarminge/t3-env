@@ -5,7 +5,7 @@ import { z } from "zod";
  * Specify your server-side environment variables schema here.
  * This way you can ensure the app isn't built with invalid env vars.
  */
-export const server = z.object({
+const server = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]),
   NEXTAUTH_SECRET:
     process.env.NODE_ENV === "production"
@@ -25,7 +25,7 @@ export const server = z.object({
  * This way you can ensure the app isn't built with invalid env vars.
  * To expose them to the client, prefix them with `NEXT_PUBLIC_`.
  */
-export const client = z.object({
+const client = z.object({
   NEXT_PUBLIC_CLIENTVAR: z.string(),
 });
 
@@ -34,7 +34,7 @@ export const client = z.object({
  * edge runtimes (e.g. middlewares) or client-side so we need to destruct manually.
  * @type {Record<keyof z.infer<typeof server> | keyof z.infer<typeof client>, string | undefined>}
  */
-export const processEnv = {
+const processEnv = {
   NODE_ENV: process.env.NODE_ENV,
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
   NEXTAUTH_URL: process.env.NEXTAUTH_URL,
@@ -44,7 +44,7 @@ export const processEnv = {
 // Don't touch the part below
 // --------------------------
 
-export const formatErrors = (
+const formatErrors = (
   /** @type {z.ZodFormattedError<Map<string,string>,string>} */
   errors
 ) =>

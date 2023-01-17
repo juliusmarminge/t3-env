@@ -55,11 +55,12 @@ const formatErrors = (
     })
     .filter(Boolean);
 
+const isServer = typeof window === "undefined";
+
 const merged = server.merge(client);
-const parsed =
-  typeof window === "undefined"
-    ? merged.safeParse(processEnv)
-    : client.safeParse(processEnv);
+const parsed = isServer
+  ? merged.safeParse(processEnv)
+  : client.safeParse(processEnv);
 if (parsed.success === false) {
   console.error(
     "❌ Invalid environment variables:\n",
@@ -69,5 +70,16 @@ if (parsed.success === false) {
 }
 
 /** @type z.infer<merged>
- * @ts-ignore - technically lying here */
-export const env = parsed.data;
+ *  @ts-ignore - proxy is hard in TS */
+export const env = new Proxy(parsed.data, {
+  get(target, prop) {
+    if (typeof prop !== "string") return undefined;
+    if (!isServer && !prop.startsWith("NEXT_PUBLIC_"))
+      throw new Error(
+        "❌ Attempted to access serverside environment variable on the client"
+      );
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore - proxy is hard in TS
+    return target[prop];
+  },
+});

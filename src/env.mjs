@@ -61,6 +61,7 @@ const merged = server.merge(client);
 const parsed = isServer
   ? merged.safeParse(processEnv)
   : client.safeParse(processEnv);
+
 if (parsed.success === false) {
   console.error(
     "❌ Invalid environment variables:\n",
